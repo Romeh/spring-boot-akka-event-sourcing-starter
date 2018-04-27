@@ -22,10 +22,11 @@ Maven dependency
 
 
 For detailed technical details and explanation , check my 4 parts blog posts: 
-- Part 1:
-- Part 2:
-- Part 3: 
-- Part 4: 
+
+- Part 1:https://mromeh.com/2018/04/27/spring-boot-akka-event-sourcing-starter-part-1/
+- Part 2:https://mromeh.com/2018/04/27/spring-boot-akka-event-sourcing-starter-part-2/
+- Part 3:https://mromeh.com/2018/04/27/spring-boot-akka-event-sourcing-starter-part-3-the-working-example/ 
+- Part 4:https://mromeh.com/2018/04/27/spring-boot-akka-event-sourcing-starter-part-4-final/ 
 
 
 Spring boot , Akka and Ignite used versions:
