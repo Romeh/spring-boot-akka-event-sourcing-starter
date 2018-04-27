@@ -1,0 +1,16 @@
+spring:
+  jackson:
+    default-property-inclusion: non_null
+
+  akka:
+    config: eventSourcing.conf
+    system-name: orderManagerSystem
+
+server:
+  tomcat:
+    accessLog.enabled: true
+    basedir: "./Application"
+    accessLogPattern: "%h %l %u %t \"%r\" %s %b %D"
+  port: 9595
+
+
