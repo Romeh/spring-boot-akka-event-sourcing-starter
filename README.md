@@ -4,7 +4,7 @@
 
 - Spring boot akka persistence event sourcing starter that cover the following :Smooth integration between Akka persistence and Spring Boot
 - Generic DSL for the aggregate flow definition for commands and events
-![alt text](images/Aggregate flow.png)
+![alt text](images/AggregateFlow.png)
 - Abstract Aggregate persistent entity actor with all common logic in place and which can be used with the concrete managed spring beans implementation of different aggregate entities
 - Abstract cluster sharding run-time configuration and access via spring boot custom configuration and a generic entity broker that abstract the cluster shading implementation for you
 - Abstracted mixed configuration for your actor system and the entity configuration via spring configuration and akka configuration
