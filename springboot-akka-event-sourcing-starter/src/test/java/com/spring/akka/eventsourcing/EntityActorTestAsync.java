@@ -7,14 +7,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.spring.akka.eventsourcing.config.AkkaProperties;
 import com.spring.akka.eventsourcing.example.OrderEntity;
 import com.spring.akka.eventsourcing.example.OrderEntityProperties;
 import com.spring.akka.eventsourcing.example.OrderStatus;
@@ -30,7 +25,7 @@ import akka.util.Timeout;
  * These test cases are time sensitive and may (extremely rarely) fail if run with test suite because of GC pause etc.
  * Run them as part of separate suite or increase the expiry delay to higher number and adjust test cases delays accordingly.
  */
-@SpringBootTest
+@SpringBootTest(classes = TestConfig.class)
 @RunWith(SpringRunner.class)
 public class EntityActorTestAsync {
 
@@ -103,19 +98,4 @@ public class EntityActorTestAsync {
 			e.printStackTrace();
 		}
 	}
-
-	@Configuration
-	@EnableAutoConfiguration
-	@ComponentScan("com.spring.akka.eventsourcing")
-	static class SpringConfig {
-		@Bean
-		public AkkaProperties akkaProperties() {
-			AkkaProperties akkaProperties = new AkkaProperties();
-			akkaProperties.setConfig("akka.initializer.conf");
-			akkaProperties.setSystemName("testActorSystem");
-			return akkaProperties;
-		}
-
-	}
-
 }

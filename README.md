@@ -2,7 +2,7 @@
 # Spring boot akka event sourcing starter 
 ![alt text](images/FlowContext.png)
 
-- Spring boot akka persistence event sourcing starter that cover the following :Smooth integration between Akka persistence and Spring Boot
+- Spring boot akka persistence event sourcing starter that cover the following :Smooth integration between Akka persistence and Spring Boot 2
 - Generic DSL for the aggregate flow definition for commands and events
 ![alt text](images/AggregateFlow.png)
 - Abstract Aggregate persistent entity actor with all common logic in place and which can be used with the concrete managed spring beans implementation of different aggregate entities
@@ -16,7 +16,7 @@ Maven dependency
         <dependency>
                    <groupId>io.github.romeh</groupId>
                    <artifactId>springboot-akka-event-sourcing-starter</artifactId>
-                   <version>1.0</version>
+                   <version>1.0.1</version>
         </dependency>
 ````
 
@@ -32,4 +32,4 @@ For detailed technical details and explanation , check my 4 parts blog posts:
 Spring boot , Akka and Ignite used versions:
 --------------
 
-Spring boot 1.5.9.RELEASE, Akka version :2.5.9+ , Ignite Version :2.3.0+
+Spring boot 2.1.0.RELEASE+, Akka version :2.5.18+ , Ignite Version :2.6.0+

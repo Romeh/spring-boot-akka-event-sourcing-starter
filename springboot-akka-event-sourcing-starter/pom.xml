@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.github.romeh</groupId>
         <artifactId>springboot-event-sourcing-initializer</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -112,6 +112,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -130,6 +131,13 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.dnvriend</groupId>
+            <artifactId>akka-persistence-inmemory_2.12</artifactId>
+            <version>2.4.20.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -145,6 +153,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>akk-persistence-test-repo</id>
+            <name>your custom repo</name>
+            <url>http://dl.bintray.com/dnvriend/maven</url>
+        </repository>
+    </repositories>
 
     <profiles>
         <profile>

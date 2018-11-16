@@ -5,11 +5,11 @@
     <parent>
         <groupId>io.github.romeh</groupId>
         <artifactId>springboot-event-sourcing-initializer</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>spring-event-sourcing-example-write</artifactId>
+    <artifactId>springboot-akka-event-sourcing-example</artifactId>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -100,11 +100,22 @@
             <artifactId>protobuf-java-format</artifactId>
             <version>${protobuf-java-format.version}</version>
         </dependency>
-
+        <!-- fix h2 conflict with spring boot-->
         <dependency>
             <groupId>io.github.romeh</groupId>
             <artifactId>akka-persistence-ignite</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.195</version>
         </dependency>
     </dependencies>
 
