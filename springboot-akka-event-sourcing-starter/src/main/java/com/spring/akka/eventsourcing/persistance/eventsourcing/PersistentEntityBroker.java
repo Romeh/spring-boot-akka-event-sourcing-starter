@@ -46,7 +46,7 @@ public class PersistentEntityBroker {
 		Map<Class<? extends PersistentEntity>, ActorRef> initMap = new HashMap<>();
 
 		persistentEntityProperties.forEach(persistentEntityConfig -> initMap.put(persistentEntityConfig.getEntityClass(),
-						PersistentEntitySharding.of(create(persistentEntityConfig.getEntityClass(), persistentEntityConfig),
+				PersistentEntitySharding.of(create(persistentEntityConfig.getEntityClass(), persistentEntityConfig),
 						persistentEntityConfig.persistenceIdPrefix(), persistentEntityConfig.persistenceIdPostfix(),
 						persistentEntityConfig.numberOfShards(), persistentEntityConfig.getRootCommandType()).shardRegion(actorSystem)));
 

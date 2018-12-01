@@ -174,7 +174,7 @@ public abstract class PersistentEntity<C, E, S> extends AbstractPersistentActor 
 						handlePostCommandPersistAction(nextAction);
 
 					} else {
-						self().tell(String.join("Unhandled command" + command.getClass().getSimpleName() + "in: " + this.getClass().getSimpleName() + "with id: " + persistenceIdPrefix), getSender());
+						getSender().tell(String.join("Unhandled command" + command.getClass().getSimpleName() + "in: " + this.getClass().getSimpleName() + "with id: " + persistenceIdPrefix), self());
 						unhandled(command);
 					}
 				})
@@ -275,12 +275,11 @@ public abstract class PersistentEntity<C, E, S> extends AbstractPersistentActor 
 	@Override
 	public final Receive createReceiveRecover() {
 		return ReceiveBuilder.create()
-				.match(SnapshotOffer.class, snapshot -> {
-					this.state = (S) snapshot.snapshot();
-				})
-				.match(RecoveryCompleted.class, recoveryCompleted -> {
-					this.state = recoveryCompleted(state);
-				}).match(eventType, event -> {
+				.match(SnapshotOffer.class, snapshot ->
+						this.state = (S) snapshot.snapshot())
+				.match(RecoveryCompleted.class, recoveryCompleted ->
+						this.state = recoveryCompleted(state)
+				).match(eventType, event -> {
 					applyEvent(event);
 					eventCount += 1;
 				})

@@ -16,8 +16,8 @@ import lombok.Singular;
  * @param <C> root command class type
  * @param <E> root event class
  * @param <S> root state class
- *
- * builder class for the execution flow of the aggregate entity
+ *            <p>
+ *            builder class for the execution flow of the aggregate entity
  */
 @Builder
 @Data

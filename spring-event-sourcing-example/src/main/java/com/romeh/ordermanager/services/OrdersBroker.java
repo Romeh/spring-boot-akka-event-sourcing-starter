@@ -25,21 +25,20 @@ import akka.util.Timeout;
 @Service
 public class OrdersBroker {
 
+	private final static Timeout timeout = Timeout.apply(
+			2, TimeUnit.SECONDS);
 	/**
 	 * the AKKA sharding persistent entities general broker
 	 */
 	private final PersistentEntityBroker persistentEntityBroker;
-	private final static Timeout timeout=Timeout.apply(
-			2, TimeUnit.SECONDS);
 	/**
 	 * generic completable future handle response function
 	 */
 	private final Function<Object, Response> handlerResponse = o -> {
 
-		if (o != null && o instanceof Response) {
+		if (o instanceof Response) {
 			return (Response) o;
-		}
-		else {
+		} else {
 			return Response.builder().errorCode("1100").errorMessage("unexpected error has been found").build();
 		}
 
@@ -116,7 +115,7 @@ public class OrdersBroker {
 	/**
 	 * @return Persistent entity actor reference based into AKKA cluster sharding
 	 */
-	private final ActorRef getOrderEntity() {
+	private ActorRef getOrderEntity() {
 		return persistentEntityBroker.findPersistentEntity(OrderManager.class);
 
 	}

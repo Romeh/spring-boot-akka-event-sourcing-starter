@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.github.romeh</groupId>
         <artifactId>springboot-event-sourcing-initializer</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>io.github.romeh</groupId>
             <artifactId>springboot-akka-event-sourcing-starter</artifactId>
-            <version>1.0</version>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>io.github.romeh</groupId>
             <artifactId>akka-persistence-ignite</artifactId>
-            <version>1.0.1</version>
+            <version>1.1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.h2database</groupId>

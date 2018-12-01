@@ -5,12 +5,16 @@
     <parent>
         <groupId>io.github.romeh</groupId>
         <artifactId>springboot-event-sourcing-initializer</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>springboot-akka-event-sourcing-starter</artifactId>
     <packaging>jar</packaging>
+
+    <name>springboot-akka-event-sourcing-starter</name>
+    <description>spring boot akka persistence event sourcing starter</description>
+    <url>https://github.com/Romeh/springboot-akka-event-sourcing-starter</url>
 
     <properties>
         <sonar.exclusions>**/domain/*.java,**/config/*.java,**/exceptions/*.java</sonar.exclusions>
@@ -197,6 +201,9 @@
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

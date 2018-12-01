@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 /**
  * @author romeh
- * Tri function support 
+ * Tri function support
  */
 @FunctionalInterface
 public interface TriFunction<A, B, C, R> {

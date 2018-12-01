@@ -9,8 +9,8 @@ import lombok.Value;
 
 /**
  * @param <E> the event type
- * 
- *  the async result class that contain the async persist action and if exist the error response
+ *            <p>
+ *            the async result class that contain the async persist action and if exist the error response
  */
 @Builder
 @Value

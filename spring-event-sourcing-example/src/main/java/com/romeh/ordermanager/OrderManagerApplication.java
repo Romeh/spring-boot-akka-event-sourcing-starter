@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * the main app runner
- * @author romeh
  *
+ * @author romeh
  */
 
 @SpringBootApplication

@@ -15,35 +15,38 @@ option optimize_for = SPEED;
 
 /*message CreatedEvent{
      string orderId=1;
-     OrderStatus orderStatus= 2;
+     string orderStatus= 2;
 }
 
 message FinishedEvent{
     string orderId=1;
-    OrderStatus orderStatus= 2;
-}*/
-
-message OrderEvent{
+    string orderStatus= 2;
+}
+message SignedEvent{
     string orderId=1;
     string orderStatus= 2;
 }
-
-/*message SignedEvent{
-    string orderId=1;
-    OrderStatus orderStatus= 2;
-}*/
 
 message ValidatedEvent{
     string orderId=1;
     string orderStatus= 2;
+}*/
+
+message OrderEvent {
+    string orderId = 1;
+    string orderStatus = 2;
 }
 
-message OrderCmd{
+message OrderCmd {
     string orderId=1;
     map<string, string> orderDetails = 2;
 }
 
-/*
+/*message CreateCmd{
+    string orderId=1;
+    map<string, string> orderDetails = 2;
+}
+
 message ValidateCmd{
     string orderId=1;
     map<string, string> orderDetails = 2;

@@ -4,7 +4,7 @@
 
     <groupId>io.github.romeh</groupId>
     <artifactId>springboot-event-sourcing-initializer</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>pom</packaging>
 
     <modelVersion>4.0.0</modelVersion>

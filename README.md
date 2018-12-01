@@ -16,7 +16,7 @@ Maven dependency
         <dependency>
                    <groupId>io.github.romeh</groupId>
                    <artifactId>springboot-akka-event-sourcing-starter</artifactId>
-                   <version>1.0.1</version>
+                   <version>1.0.2</version>
         </dependency>
 ````
 

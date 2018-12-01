@@ -18,7 +18,7 @@ import akka.persistence.AbstractPersistentActor;
  * - Respond to a specific base class of commands
  * - Send the commands unchanged from the SharedRegion router onto the persistent actors themselves
  *
- * @param C Base class of commands that the actor will respond to
+ * @param <C> Base class of commands that the actor will respond to
  */
 
 public class PersistentEntitySharding<C> {
@@ -35,10 +35,10 @@ public class PersistentEntitySharding<C> {
 
 		@Override
 		public String shardId(Object command) {
-			if(command instanceof ShardRegion.StartEntity){
-				ShardRegion.StartEntity startEntity =(ShardRegion.StartEntity)command;
+			if (command instanceof ShardRegion.StartEntity) {
+				ShardRegion.StartEntity startEntity = (ShardRegion.StartEntity) command;
 				return getShardId(startEntity.entityId());
-			}else{
+			} else {
 				return getShardId(getEntityId(command));
 			}
 
@@ -103,8 +103,6 @@ public class PersistentEntitySharding<C> {
 	public String getPersistenceIdPostfix(String persistenceId) {
 		return persistenceId.substring(persistenceIdPrefix.length() + 1);
 	}
-
-	;
 
 	/**
 	 * Returns the entityId (=persistenceId) to which the given command should be routed
