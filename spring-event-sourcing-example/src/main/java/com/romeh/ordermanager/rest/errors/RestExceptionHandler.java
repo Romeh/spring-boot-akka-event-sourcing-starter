@@ -21,6 +21,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.romeh.ordermanager.reader.services.OrderNotFoundException;
+
 import akka.pattern.AskTimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -117,8 +119,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @return the ApiError object
 	 */
 	@ExceptionHandler(AskTimeoutException.class)
-	protected ResponseEntity<Object> handleEntityNotFound(
+	protected ResponseEntity<Object> handleAkkaAskTimeout(
 			AskTimeoutException ex) {
+		ApiError apiError = new ApiError(NOT_FOUND);
+		apiError.setMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
+	}
+
+
+	/**
+	 * Handles OrderNotFoundException. Created to encapsulate errors when order is not found in the read store
+	 *
+	 * @param ex the OrderNotFoundException
+	 * @return the ApiError object
+	 */
+	@ExceptionHandler(OrderNotFoundException.class)
+	protected ResponseEntity<Object> handleOrderNotFound(
+			OrderNotFoundException ex) {
 		ApiError apiError = new ApiError(NOT_FOUND);
 		apiError.setMessage(ex.getMessage());
 		return buildResponseEntity(apiError);

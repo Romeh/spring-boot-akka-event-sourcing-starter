@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.romeh.ordermanager.entities.OrderState;
 import com.romeh.ordermanager.entities.Response;
 import com.romeh.ordermanager.entities.commands.OrderCmd;
+import com.romeh.ordermanager.reader.entities.JournalReadItem;
+import com.romeh.ordermanager.reader.services.OrderNotFoundException;
 import com.romeh.ordermanager.rest.dto.OrderRequest;
 import com.romeh.ordermanager.services.OrdersBroker;
 
@@ -75,6 +77,16 @@ public class OrderRestController {
 	public CompletableFuture<OrderState> getOrderState(@PathVariable @NotNull String orderId) {
 		return ordersBroker.getOrderStatus(new OrderCmd.GetOrderStatusCmd(orderId, Collections.emptyMap()));
 
+	}
+
+
+	/**
+	 * @param orderId unique orderId string value
+	 * @return JournalReadItem Json response if any
+	 */
+	@RequestMapping(value = "/readStore/{orderId}", method = RequestMethod.GET)
+	public JournalReadItem getOrderLastStateFromReadStore(@PathVariable @NotNull String orderId) throws OrderNotFoundException {
+		return ordersBroker.getOrderLastStatus(orderId);
 	}
 
 }

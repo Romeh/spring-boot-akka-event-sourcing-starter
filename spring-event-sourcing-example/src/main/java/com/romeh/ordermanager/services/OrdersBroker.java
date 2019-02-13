@@ -1,5 +1,6 @@
 package com.romeh.ordermanager.services;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -11,6 +12,9 @@ import com.romeh.ordermanager.domain.OrderManager;
 import com.romeh.ordermanager.entities.OrderState;
 import com.romeh.ordermanager.entities.Response;
 import com.romeh.ordermanager.entities.commands.OrderCmd;
+import com.romeh.ordermanager.reader.entities.JournalReadItem;
+import com.romeh.ordermanager.reader.services.OrderNotFoundException;
+import com.romeh.ordermanager.reader.services.ReadStoreStreamerService;
 import com.spring.akka.eventsourcing.persistance.eventsourcing.PersistentEntityBroker;
 
 import akka.actor.ActorRef;
@@ -31,31 +35,23 @@ public class OrdersBroker {
 	 * the AKKA sharding persistent entities general broker
 	 */
 	private final PersistentEntityBroker persistentEntityBroker;
+	private final ReadStoreStreamerService readStoreStreamerService;
 	/**
 	 * generic completable future handle response function
 	 */
 	private final Function<Object, Response> handlerResponse = o -> {
-
 		if (o instanceof Response) {
 			return (Response) o;
 		} else {
 			return Response.builder().errorCode("1100").errorMessage("unexpected error has been found").build();
 		}
-
 	};
 
 	/**
 	 * generic completable future get order state handle response function
 	 */
-	private final Function<Object, OrderState> handleGetState = o -> {
-
-		if (o != null) {
-			return (OrderState) o;
-		} else {
-			throw new IllegalStateException("un-expected error has been thrown");
-		}
-
-	};
+	private final Function<Object, OrderState> handleGetState = o -> Optional.ofNullable(o).map(getState -> (OrderState) getState)
+			.orElseThrow(() -> new IllegalStateException("un-expected error has been thrown"));
 	/**
 	 * generic completable future handle exception function
 	 */
@@ -63,8 +59,9 @@ public class OrdersBroker {
 
 
 	@Autowired
-	public OrdersBroker(PersistentEntityBroker persistentEntityBroker) {
+	public OrdersBroker(PersistentEntityBroker persistentEntityBroker, ReadStoreStreamerService readStoreStreamerService) {
 		this.persistentEntityBroker = persistentEntityBroker;
+		this.readStoreStreamerService = readStoreStreamerService;
 	}
 
 	/**
@@ -102,7 +99,7 @@ public class OrdersBroker {
 	}
 
 	/**
-	 * get order state service API
+	 * get order state service API from write store
 	 *
 	 * @param getOrderStatusCmd get Order state command
 	 * @return order state
@@ -110,6 +107,16 @@ public class OrdersBroker {
 	public CompletableFuture<OrderState> getOrderStatus(OrderCmd.GetOrderStatusCmd getOrderStatusCmd) {
 		return PatternsCS.ask(getOrderEntity(), getOrderStatusCmd, timeout).toCompletableFuture()
 				.thenApply(handleGetState);
+	}
+
+	/**
+	 * get last order state service API from read store
+	 *
+	 * @param orderId the order id
+	 * @return order last status
+	 */
+	public JournalReadItem getOrderLastStatus(String orderId) throws OrderNotFoundException {
+		return readStoreStreamerService.getOrderStatus(orderId);
 	}
 
 	/**
