@@ -19,6 +19,10 @@
         <rest-locations>com.romeh.ordermanager.rest</rest-locations>
         <protobuf.version>3.5.1</protobuf.version>
         <protobuf-java-format.version>1.4</protobuf-java-format.version>
+        <rx.java>2.2.4</rx.java>
+        <h2>1.4.195</h2>
+        <springboot-akka-event-sourcing-starter>1.0.2</springboot-akka-event-sourcing-starter>
+        <akka-persistence-ignite>1.1.1</akka-persistence-ignite>
     </properties>
 
     <dependencies>
@@ -37,13 +41,17 @@
         <dependency>
             <groupId>io.github.romeh</groupId>
             <artifactId>springboot-akka-event-sourcing-starter</artifactId>
-            <version>1.0.2</version>
+            <version>${springboot-akka-event-sourcing-starter}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>${rx.java}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -104,7 +112,7 @@
         <dependency>
             <groupId>io.github.romeh</groupId>
             <artifactId>akka-persistence-ignite</artifactId>
-            <version>1.1.0</version>
+            <version>${akka-persistence-ignite}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.h2database</groupId>
@@ -115,7 +123,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.195</version>
+            <version>${h2}</version>
         </dependency>
     </dependencies>
 
@@ -189,7 +197,7 @@
                 </executions>
             </plugin>
 
-           <plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
