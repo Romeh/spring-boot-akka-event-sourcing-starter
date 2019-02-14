@@ -1,5 +1,6 @@
 
 # Spring boot akka event sourcing starter 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ff003ee53029401787b4d4f0da4f5cd7)](https://app.codacy.com/app/Romeh/spring-boot-akka-event-sourcing-starter?utm_source=github.com&utm_medium=referral&utm_content=Romeh/spring-boot-akka-event-sourcing-starter&utm_campaign=Badge_Grade_Dashboard)
 [![Maven Central](https://img.shields.io/maven-central/v/com.coxautodata/waimak-core_2.11.svg)](https://search.maven.org/search?q=g:io.github.romeh%20AND%20a:springboot-akka-event-sourcing-starter)
 
 ![alt text](images/FlowContext.png)
