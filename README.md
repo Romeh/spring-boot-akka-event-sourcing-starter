@@ -1,5 +1,7 @@
 
 # Spring boot akka event sourcing starter 
+![Maven Central](https://img.shields.io/nexus/r/https/oss.sonatype.org/io.github.romeh/springboot-akka-event-sourcing-starter.svg?style=flat)
+
 ![alt text](images/FlowContext.png)
 
 - Spring boot akka persistence event sourcing starter that cover the following :Smooth integration between Akka persistence and Spring Boot 2
