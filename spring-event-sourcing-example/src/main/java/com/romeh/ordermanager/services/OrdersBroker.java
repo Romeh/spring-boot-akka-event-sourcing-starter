@@ -34,13 +34,6 @@ public class OrdersBroker {
 	 */
 	private final PersistentEntityBroker persistentEntityBroker;
 	private final ReadStoreStreamerService readStoreStreamerService;
-
-	@Autowired
-	public OrdersBroker(PersistentEntityBroker persistentEntityBroker, ReadStoreStreamerService readStoreStreamerService) {
-		this.persistentEntityBroker = persistentEntityBroker;
-		this.readStoreStreamerService = readStoreStreamerService;
-	}
-
 	/**
 	 * generic completable future handle response function
 	 */
@@ -62,6 +55,13 @@ public class OrdersBroker {
 	 * generic completable future handle exception function
 	 */
 	private final Function<Throwable, Response> handleException = throwable -> Response.builder().errorCode("1111").errorMessage(throwable.getLocalizedMessage()).build();
+
+
+	@Autowired
+	public OrdersBroker(PersistentEntityBroker persistentEntityBroker, ReadStoreStreamerService readStoreStreamerService) {
+		this.persistentEntityBroker = persistentEntityBroker;
+		this.readStoreStreamerService = readStoreStreamerService;
+	}
 
 	/**
 	 * create order service API
@@ -85,7 +85,6 @@ public class OrdersBroker {
 		return PatternsCS.ask(getOrderEntity(), validateCmd, timeout).toCompletableFuture()
 				.thenApply(handlerResponse).exceptionally(handleException);
 	}
-
 	/**
 	 * Sign order service API
 	 *
