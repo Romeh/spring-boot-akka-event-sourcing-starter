@@ -1,6 +1,6 @@
 
 # Spring boot akka event sourcing starter 
-[![Maven Central](https://img.shields.io/maven-central/v/com.coxautodata/waimak-core_2.11.svg)](https://search.maven.org/search?q=g:io.github.romeh%20AND%20a:springboot-akka-event-sourcing-starter)
+![Maven Central](https://img.shields.io/nexus/r/https/oss.sonatype.org/io.github.romeh/springboot-akka-event-sourcing-starter.svg?style=flat)
 
 ![alt text](images/FlowContext.png)
 
