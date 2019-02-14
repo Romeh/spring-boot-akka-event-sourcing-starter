@@ -48,7 +48,7 @@ public class PersistentEntityBroker {
 		persistentEntityProperties.forEach(persistentEntityConfig -> initMap.put(persistentEntityConfig.getEntityClass(),
 				PersistentEntitySharding.of(create(persistentEntityConfig.getEntityClass(), persistentEntityConfig),
 						persistentEntityConfig.persistenceIdPrefix(), persistentEntityConfig.persistenceIdPostfix(),
-						persistentEntityConfig.numberOfShards(), persistentEntityConfig.getRootCommandType()).shardRegion(actorSystem)));
+						persistentEntityConfig.numberOfShards()).shardRegion(actorSystem)));
 
 		shardingRegistery = Collections.unmodifiableMap(initMap);
 

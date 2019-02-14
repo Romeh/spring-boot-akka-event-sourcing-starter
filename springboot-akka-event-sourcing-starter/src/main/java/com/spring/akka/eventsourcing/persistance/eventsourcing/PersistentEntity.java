@@ -200,67 +200,72 @@ public abstract class PersistentEntity<C, E, S> extends AbstractPersistentActor 
 		if (nextAction instanceof PersistNone) {
 			// no events to be persisted so it is read only action
 		} else if (nextAction instanceof PersistOne) {
-			final E event = nextAction.getEvent();
-			if (event != null) {
-				applyEvent(event);
-				persist(tagged(event), evt -> {
-					try {
-						eventCount += 1;
-						if (nextAction.getAfterPersist() != null)
-							nextAction.getAfterPersist().accept((E) evt.payload());
-						if (snapshotAfter > 0 && eventCount % snapshotAfter == 0)
-							saveSnapshot(getState());
-					} catch (Exception e) {
-						log.error("error has been thrown during persist of the events", e);
-						self().tell(ErrorResponse.builder().exceptionMsg(e.getLocalizedMessage()).errorCode("SA_001")
-								.errorMsg("Error in connecting to event store").build(), getSender());
-					}
-				});
-			} else {
-				// just apply the post action with null event
-				log.warning("NULL event is returned from persistOne action for entity id {}", persistenceId());
-				if (nextAction.getAfterPersist() != null) {
-					nextAction.getAfterPersist().accept(event);
-				}
-
-			}
+			handlePersistOne(nextAction);
 		} else if (nextAction instanceof PersistAll) {
+			handlePersistAll((PersistAll) nextAction);
+		}
+	}
 
-			final PersistAll<E> persistAllAction = (PersistAll) nextAction;
+	private void handlePersistAll(PersistAll nextAction) {
+		final PersistAll<E> persistAllAction = nextAction;
 
-			if (persistAllAction.getEvents().isEmpty()) {
-				log.warning("NO events is returned from persistOne action for entity id {}", persistenceId());
-				if (persistAllAction.getAfterPersistAll() != null) {
-					persistAllAction.getAfterPersistAll().accept(Collections.EMPTY_LIST);
-				}
-			} else {
+		if (persistAllAction.getEvents().isEmpty()) {
+			log.warning("NO events is returned from persistOne action for entity id {}", persistenceId());
+			if (persistAllAction.getAfterPersistAll() != null) {
+				persistAllAction.getAfterPersistAll().accept(Collections.EMPTY_LIST);
+			}
+		} else {
+			try {
+				AtomicInteger count = new AtomicInteger(persistAllAction.getEvents().size());
+				AtomicBoolean snap = new AtomicBoolean(false);
+				persistAllAction.getEvents().forEach(this::applyEvent);
+				persistAll(tagged(persistAllAction.getEvents()), evt -> {
+					eventCount += 1;
+					final int currentCount = count.decrementAndGet();
+					if (currentCount == 0 && persistAllAction.getAfterPersist() != null) {
+						persistAllAction.getAfterPersistAll().accept(persistAllAction.getEvents());
+					}
+					if (snapshotAfter > 0 && eventCount % snapshotAfter == 0) {
+						snap.getAndSet(true);
+					}
+					if (currentCount == 0 && snap.get())
+						saveSnapshot(getState());
+
+				});
+			} catch (Exception e) {
+				log.error("error has been thrown during persist of the events", e);
+				self().tell(ErrorResponse.builder().exceptionMsg(e.getLocalizedMessage()).errorCode("SA_001")
+						.errorMsg("Error in connecting to event store").build(), getSender());
+			}
+
+		}
+	}
+
+	private void handlePersistOne(Persist<E> nextAction) {
+		final E event = nextAction.getEvent();
+		if (event != null) {
+			applyEvent(event);
+			persist(tagged(event), evt -> {
 				try {
-					AtomicInteger count = new AtomicInteger(persistAllAction.getEvents().size());
-					AtomicBoolean snap = new AtomicBoolean(false);
-					persistAllAction.getEvents().forEach(this::applyEvent);
-					persistAll(tagged(persistAllAction.getEvents()), evt -> {
-						eventCount += 1;
-						final int currentCount = count.decrementAndGet();
-						if (currentCount == 0 && persistAllAction.getAfterPersist() != null) {
-							persistAllAction.getAfterPersistAll().accept(persistAllAction.getEvents());
-						}
-						if (snapshotAfter > 0 && eventCount % snapshotAfter == 0) {
-							snap.getAndSet(true);
-						}
-						if (currentCount == 0 && snap.get())
-							saveSnapshot(getState());
-
-					});
+					eventCount += 1;
+					if (nextAction.getAfterPersist() != null)
+						nextAction.getAfterPersist().accept((E) evt.payload());
+					if (snapshotAfter > 0 && eventCount % snapshotAfter == 0)
+						saveSnapshot(getState());
 				} catch (Exception e) {
 					log.error("error has been thrown during persist of the events", e);
 					self().tell(ErrorResponse.builder().exceptionMsg(e.getLocalizedMessage()).errorCode("SA_001")
 							.errorMsg("Error in connecting to event store").build(), getSender());
 				}
-
+			});
+		} else {
+			// just apply the post action with null event
+			log.warning("NULL event is returned from persistOne action for entity id {}", persistenceId());
+			if (nextAction.getAfterPersist() != null) {
+				nextAction.getAfterPersist().accept(event);
 			}
 
 		}
-
 	}
 
 	/**

@@ -2,7 +2,6 @@ package com.spring.akka.eventsourcing.config;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -19,12 +18,9 @@ import akka.actor.ActorSystem;
 @EnableConfigurationProperties(AkkaProperties.class)
 public class AkkaAutoConfiguration {
 
-	@Autowired
-	private AkkaProperties akkaProperties;
-
 	@Bean(destroyMethod = "terminate")
 	@ConditionalOnMissingBean
-	public ActorSystem getActorSystem() {
+	public ActorSystem getActorSystem(AkkaProperties akkaProperties) {
 		ActorSystem system;
 		if (akkaProperties.getSystemName() != null && akkaProperties.getConfig() != null) {
 			system = ActorSystem.create(akkaProperties.getSystemName(), akkaProperties.getConfig());

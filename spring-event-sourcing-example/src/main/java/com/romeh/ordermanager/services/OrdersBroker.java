@@ -1,8 +1,8 @@
 package com.romeh.ordermanager.services;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import com.spring.akka.eventsourcing.persistance.eventsourcing.PersistentEntityB
 
 import akka.actor.ActorRef;
 import akka.pattern.PatternsCS;
-import akka.util.Timeout;
 
 /**
  * the orders service that handle order commands and respond in async mode
@@ -29,13 +28,19 @@ import akka.util.Timeout;
 @Service
 public class OrdersBroker {
 
-	private final static Timeout timeout = Timeout.apply(
-			2, TimeUnit.SECONDS);
+	private final static Duration timeout = Duration.ofMillis(2000);
 	/**
 	 * the AKKA sharding persistent entities general broker
 	 */
 	private final PersistentEntityBroker persistentEntityBroker;
 	private final ReadStoreStreamerService readStoreStreamerService;
+
+	@Autowired
+	public OrdersBroker(PersistentEntityBroker persistentEntityBroker, ReadStoreStreamerService readStoreStreamerService) {
+		this.persistentEntityBroker = persistentEntityBroker;
+		this.readStoreStreamerService = readStoreStreamerService;
+	}
+
 	/**
 	 * generic completable future handle response function
 	 */
@@ -52,17 +57,11 @@ public class OrdersBroker {
 	 */
 	private final Function<Object, OrderState> handleGetState = o -> Optional.ofNullable(o).map(getState -> (OrderState) getState)
 			.orElseThrow(() -> new IllegalStateException("un-expected error has been thrown"));
+
 	/**
 	 * generic completable future handle exception function
 	 */
 	private final Function<Throwable, Response> handleException = throwable -> Response.builder().errorCode("1111").errorMessage(throwable.getLocalizedMessage()).build();
-
-
-	@Autowired
-	public OrdersBroker(PersistentEntityBroker persistentEntityBroker, ReadStoreStreamerService readStoreStreamerService) {
-		this.persistentEntityBroker = persistentEntityBroker;
-		this.readStoreStreamerService = readStoreStreamerService;
-	}
 
 	/**
 	 * create order service API

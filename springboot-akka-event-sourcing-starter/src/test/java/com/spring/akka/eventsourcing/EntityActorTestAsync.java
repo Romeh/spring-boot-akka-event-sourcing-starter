@@ -47,8 +47,8 @@ public class EntityActorTestAsync {
 
 		result.whenComplete((o, throwable) -> {
 			Response response = (Response) o;
-			System.out.println("Romeh Async 1: " + response.toString());
-			Assert.assertEquals(response.getOrderId(), "123456");
+			System.out.println("Step Async 1: " + response.toString());
+			Assert.assertEquals("123456", response.getOrderId());
 			Assert.assertEquals(response.getOrderStatus(), OrderStatus.Created.name());
 
 		});
@@ -59,8 +59,8 @@ public class EntityActorTestAsync {
 			final CompletableFuture<Object> result2 = PatternsCS.ask(testActorEntity, new OrderCmd.ValidateCmd("123456"), 5000).toCompletableFuture();
 			result2.whenComplete((o, throwable) -> {
 				Response response = (Response) o;
-				System.out.println("Romeh Async 2: " + response.toString());
-				Assert.assertEquals(response.getOrderId(), "123456");
+				System.out.println("Step Async 2: " + response.toString());
+				Assert.assertEquals("123456", response.getOrderId());
 				Assert.assertEquals(response.getOrderStatus(), OrderStatus.Validated.name());
 
 			});
@@ -72,8 +72,8 @@ public class EntityActorTestAsync {
 				final CompletableFuture<Object> result3 = PatternsCS.ask(testActorEntity, new OrderCmd.AsyncSignCmd("123456"), 5000).toCompletableFuture();
 				result3.whenComplete((o, throwable) -> {
 					Response response = (Response) o;
-					System.out.println("Romeh Async 3: " + response.toString());
-					Assert.assertEquals(response.getOrderId(), "123456");
+					System.out.println("Step Async 3: " + response.toString());
+					Assert.assertEquals("123456", response.getOrderId());
 					Assert.assertEquals(response.getOrderStatus(), OrderStatus.Signed.name());
 				});
 				// send without waiting the next command which should be stashed if the processing of the async action is still on in place
@@ -81,8 +81,8 @@ public class EntityActorTestAsync {
 						8, TimeUnit.SECONDS)).toCompletableFuture();
 				result4.whenComplete((o, throwable) -> {
 					Response response = (Response) o;
-					System.out.println("Romeh Async 4: " + response.toString());
-					Assert.assertEquals(response.getOrderId(), "123456");
+					System.out.println("Step Async 4: " + response.toString());
+					Assert.assertEquals("123456", response.getOrderId());
 					Assert.assertEquals(response.getOrderStatus(), OrderStatus.Signed.name());
 				});
 

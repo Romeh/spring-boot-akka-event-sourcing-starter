@@ -44,24 +44,20 @@ public class IgniteCacheSinkTaskCQ implements IgniteSink<CacheEntryEvent> {
 	/**
 	 * Flag for stopped state.
 	 */
-	private static volatile boolean stopped = true;
+	private volatile boolean stopped = true;
+
 	/**
-	 * Cache name.
+	 * the sink cache ignite sink data streamer context
 	 */
-	private static String cacheName;
-	private static StreamerContext streamerContext;
-	/**
-	 * Entry transformer.
-	 */
-	private static StreamSingleTupleExtractor<CacheEntryEvent, Object, Object> extractor;
+	private final transient StreamerContext streamerContext;
 
 
 	public IgniteCacheSinkTaskCQ(Map<String, String> props, Ignite sinkNode) {
 		Objects.requireNonNull(sinkNode);
-		cacheName = Optional.ofNullable(props.get(IgniteSinkConstants.CACHE_NAME))
+		String cacheName = Optional.ofNullable(props.get(IgniteSinkConstants.CACHE_NAME))
 				.orElseThrow(() -> new IllegalArgumentException("Cache name in sink task can not be NULL !"));
 
-		streamerContext = new StreamerContext(sinkNode);
+		streamerContext = new StreamerContext(sinkNode, cacheName, initTransformer(props));
 
 		if (props.containsKey(IgniteSinkConstants.CACHE_ALLOW_OVERWRITE))
 			streamerContext.getStreamer().allowOverwrite(
@@ -75,11 +71,7 @@ public class IgniteCacheSinkTaskCQ implements IgniteSink<CacheEntryEvent> {
 			streamerContext.getStreamer().perNodeParallelOperations(
 					Integer.parseInt(props.get(IgniteSinkConstants.CACHE_PER_NODE_PAR_OPS)));
 
-
-		extractor = initTransformer(props);
-
 		stopped = false;
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -117,13 +109,13 @@ public class IgniteCacheSinkTaskCQ implements IgniteSink<CacheEntryEvent> {
 	@Override
 	public void put(Collection<CacheEntryEvent> records) {
 		if (log.isDebugEnabled()) {
-			log.debug("Sink cache put : {}", records.toString());
+			log.debug("Sink cache put : {}", records);
 		}
 		if (null != records && !records.isEmpty()) {
 			for (CacheEntryEvent record : records) {
 				// Data is flushed asynchronously when CACHE_PER_NODE_DATA_SIZE is reached.
-				if (extractor != null) {
-					Map.Entry<Object, Object> entry = extractor.extract(record);
+				if (streamerContext.getExtractor() != null) {
+					Map.Entry<Object, Object> entry = streamerContext.getExtractor().extract(record);
 					if (null != entry) {
 						streamerContext.getStreamer().addData(entry.getKey(), entry.getValue());
 					}
@@ -172,15 +164,27 @@ public class IgniteCacheSinkTaskCQ implements IgniteSink<CacheEntryEvent> {
 	private static class StreamerContext {
 		private final transient Ignite IGNITE;
 		private final transient IgniteDataStreamer STREAMER;
+		/**
+		 * Sink Cache name.
+		 */
+		private final String cacheName;
+
+		/**
+		 * Entry transformer.
+		 */
+		private final StreamSingleTupleExtractor<CacheEntryEvent, Object, Object> extractor;
 
 		/**
 		 * Constructor.
-		 *
-		 * @param ignite
+		 *  @param ignite
+		 * @param cacheName
+		 * @param extractor
 		 */
-		StreamerContext(Ignite ignite) {
+		StreamerContext(Ignite ignite, String cacheName, StreamSingleTupleExtractor<CacheEntryEvent, Object, Object> extractor) {
 			IGNITE = ignite;
-			STREAMER = IGNITE.dataStreamer(cacheName);
+			this.cacheName = cacheName;
+			this.extractor = extractor;
+			STREAMER = IGNITE.dataStreamer(this.cacheName);
 		}
 
 
@@ -200,6 +204,14 @@ public class IgniteCacheSinkTaskCQ implements IgniteSink<CacheEntryEvent> {
 		 */
 		IgniteDataStreamer getStreamer() {
 			return STREAMER;
+		}
+
+		public String getCacheName() {
+			return cacheName;
+		}
+
+		public StreamSingleTupleExtractor<CacheEntryEvent, Object, Object> getExtractor() {
+			return extractor;
 		}
 	}
 }

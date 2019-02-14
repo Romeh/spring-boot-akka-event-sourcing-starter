@@ -26,6 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import javax.cache.Cache;
 import javax.cache.event.CacheEntryEvent;
@@ -63,31 +64,26 @@ public class IgniteCacheSourceTaskCQ implements IgniteSource<CacheEntryEvent> {
 	/**
 	 * Event buffer size.
 	 */
-	private static int evtBufSize = 1000;
-	/**
-	 * Local listener.
-	 */
-	private static final TaskLocalListener locLsnr = new TaskLocalListener();
-	/**
-	 * User-defined filter.
-	 */
-	private static IgnitePredicate<CacheEntryEvent> filter;
-	/**
-	 * Cache Cursor for the continuous query.
-	 */
-	private static transient QueryCursor<Cache.Entry<Object, BinaryObject>> cursor;
+	private int evtBufSize = 1000;
 	/**
 	 * Event buffer.
 	 */
-	private static BlockingQueue<CacheEntryEvent> evtBuf = new LinkedBlockingQueue<>(evtBufSize);
+	private BlockingQueue<CacheEntryEvent> evtBuf = new LinkedBlockingQueue<>(evtBufSize);
 	/**
 	 * Flag for stopped state.
 	 */
-	private final transient AtomicBoolean stopped = new AtomicBoolean(true);
+	private final AtomicBoolean stopped = new AtomicBoolean(true);
 	/**
 	 * Max number of events taken from the buffer at once.
 	 */
 	private int evtBatchSize = 10;
+	/**
+	 * Local listener.
+	 */
+	private final TaskLocalListener locLsnr;
+
+
+	private final QueryCursor<Cache.Entry<Object, BinaryObject>> cursor;
 
 
 	public IgniteCacheSourceTaskCQ(Map<String, String> props, Ignite igniteNode) {
@@ -105,9 +101,9 @@ public class IgniteCacheSourceTaskCQ implements IgniteSource<CacheEntryEvent> {
 		if (props.containsKey(IgniteSourceConstants.INTL_BATCH_SIZE))
 			evtBatchSize = Integer.parseInt(props.get(IgniteSourceConstants.INTL_BATCH_SIZE));
 
-		filter = startSourceCacheListeners(props);
 		try {
-			CacheEntryFilter rmtLsnr = new CacheEntryFilter();
+			locLsnr = new TaskLocalListener(this::handleCacheEvent);
+			CacheEntryFilter rmtLsnr = new CacheEntryFilter(startSourceCacheListeners(props));
 			// Creating a continuous query.
 			ContinuousQuery<Object, BinaryObject> qry = new ContinuousQuery<>();
 			qry.setLocalListener(locLsnr::apply);
@@ -120,11 +116,10 @@ public class IgniteCacheSourceTaskCQ implements IgniteSource<CacheEntryEvent> {
 		} finally {
 			stopped.set(false);
 		}
-
 	}
 
 	@SuppressWarnings("unchecked")
-	private IgnitePredicate<CacheEntryEvent> startSourceCacheListeners(Map<String, String> props) {
+	private static IgnitePredicate<CacheEntryEvent> startSourceCacheListeners(Map<String, String> props) {
 
 		IgnitePredicate<CacheEntryEvent> ignitePredicate = null;
 		if (props.containsKey(IgniteSourceConstants.CACHE_FILTER_CLASS)) {
@@ -202,18 +197,31 @@ public class IgniteCacheSourceTaskCQ implements IgniteSource<CacheEntryEvent> {
 		/**
 		 * {@inheritDoc}
 		 */
+
+		private final transient Consumer<CacheEntryEvent<?, ? extends BinaryObject>> evntBufferConsumer;
+
+		public TaskLocalListener(Consumer<CacheEntryEvent<?, ? extends BinaryObject>> evntBufferConsumer) {
+			this.evntBufferConsumer = evntBufferConsumer;
+		}
+
 		@Override
 		public boolean apply(Iterable<CacheEntryEvent<?, ? extends BinaryObject>> cacheEntryEvents) {
 			cacheEntryEvents.forEach(evt -> {
-				try {
-					if (evt.getEventType().equals(EventType.CREATED) || evt.getEventType().equals(EventType.UPDATED))
-						if (!evtBuf.offer(evt, 10, TimeUnit.MILLISECONDS))
-							log.error("Failed to buffer event {}", evt.getEventType());
-				} catch (InterruptedException e) {
-					log.error("error has been thrown in TaskLocalListener {} ", e);
-				}
+				if (evt.getEventType().equals(EventType.CREATED) || evt.getEventType().equals(EventType.UPDATED))
+					evntBufferConsumer.accept(evt);
 			});
 			return true;
+		}
+	}
+
+
+	public void handleCacheEvent(CacheEntryEvent<?, ? extends BinaryObject> evt) {
+		try {
+			if (!evtBuf.offer(evt, 10, TimeUnit.MILLISECONDS))
+				log.error("Failed to buffer event {}", evt.getEventType());
+		} catch (InterruptedException e) {
+			log.error("error has been thrown in TaskLocalListener {} ", e);
+			Thread.currentThread().interrupt();
 		}
 	}
 
@@ -228,6 +236,12 @@ public class IgniteCacheSourceTaskCQ implements IgniteSource<CacheEntryEvent> {
 		@IgniteInstanceResource
 		private transient Ignite ignite;
 
+		private final IgnitePredicate<CacheEntryEvent> filter;
+
+		private CacheEntryFilter(IgnitePredicate<CacheEntryEvent> filter) {
+			this.filter = filter;
+		}
+
 
 		@Override
 		public boolean evaluate(CacheEntryEvent<?, ? extends BinaryObject> evt) throws CacheEntryListenerException {
@@ -237,8 +251,8 @@ public class IgniteCacheSourceTaskCQ implements IgniteSource<CacheEntryEvent> {
 				// Process this event. Ignored on backups.
 				return filter == null || !filter.apply(evt);
 			}
-
 			return false;
 		}
 	}
+
 }

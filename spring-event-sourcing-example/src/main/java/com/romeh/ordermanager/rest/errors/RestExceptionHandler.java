@@ -155,7 +155,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
 		log.info("{} to {}", servletWebRequest.getHttpMethod(), servletWebRequest.getRequest().getServletPath());
 		String error = "Malformed JSON request";
-		return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, error, ex));
+		return buildResponseEntity(new ApiError(BAD_REQUEST, error, ex));
 	}
 
 	/**

@@ -11,6 +11,5 @@ import lombok.Data;
  */
 @Data
 public class OrderRequest {
-
-	Map<String, String> orderDetails;
+	private Map<String, String> orderDetails;
 }

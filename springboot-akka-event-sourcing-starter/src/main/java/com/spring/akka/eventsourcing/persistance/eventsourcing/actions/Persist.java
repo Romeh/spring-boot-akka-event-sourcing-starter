@@ -1,5 +1,6 @@
 package com.spring.akka.eventsourcing.persistance.eventsourcing.actions;
 
+import java.io.Serializable;
 import java.util.function.Consumer;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Persist<E> {
+public class Persist<E> implements Serializable {
 
 	private E event;
 	private Consumer<E> afterPersist;

@@ -121,7 +121,7 @@ public class OrderManager extends PersistentEntity<OrderCmd, OrderEvent, OrderSt
 		);
 		// Read only command handlers
 		executionFlowBuilder.onReadOnlyCommand(OrderCmd.CreateCmd.class, this::alreadyDone);
-		executionFlowBuilder.onReadOnlyCommand(OrderCmd.SignCmd.class, this::NotAllowed);
+		executionFlowBuilder.onReadOnlyCommand(OrderCmd.SignCmd.class, this::notAllowed);
 		executionFlowBuilder.onReadOnlyCommand(OrderCmd.GetOrderStatusCmd.class, (cmd, ctx) -> ctx.reply(getState()));
 
 		// Event handlers
@@ -214,7 +214,7 @@ public class OrderManager extends PersistentEntity<OrderCmd, OrderEvent, OrderSt
 	/**
 	 * Convenience method to handle when a command has is not allowed based into order state.
 	 */
-	private void NotAllowed(OrderCmd cmd, ReadOnlyFlowContext ctx) {
+	private void notAllowed(OrderCmd cmd, ReadOnlyFlowContext ctx) {
 		ctx.reply(Response.builder().orderId(cmd.getOrderId()).errorMessage("the request action is not allowed for the current order statue").errorCode("1111").build());
 	}
 

@@ -26,7 +26,6 @@ public class PersistentEntitySharding<C> {
 	private final String persistenceIdPrefix;
 	private final Function<C, String> persistenceIdPostfix;
 	private final int numberOfShards;
-	private final Class<C> commandType;
 	private final MessageExtractor messageExtractor = new MessageExtractor() {
 		@Override
 		public String entityId(Object command) {
@@ -52,12 +51,11 @@ public class PersistentEntitySharding<C> {
 		}
 	};
 
-	protected PersistentEntitySharding(Props props, String persistenceIdPrefix, Function<C, String> entityIdForCommand, int numberOfShards, Class<C> commandType) {
+	protected PersistentEntitySharding(Props props, String persistenceIdPrefix, Function<C, String> entityIdForCommand, int numberOfShards) {
 		this.props = props;
 		this.persistenceIdPrefix = persistenceIdPrefix;
 		this.persistenceIdPostfix = entityIdForCommand;
 		this.numberOfShards = numberOfShards;
-		this.commandType = commandType;
 	}
 
 	/**
@@ -67,8 +65,8 @@ public class PersistentEntitySharding<C> {
 	 * @param persistenceIdPrefix  Fixed prefix for each persistence id. This is typically the name of your aggregate root, e.g. "document" or "user".
 	 * @param persistenceIdPostfix Function that returns the last part of the persistence id that a command is routed to. This typically is the real ID of your entity, or UUID.
 	 */
-	public static <C> PersistentEntitySharding<C> of(Props props, String persistenceIdPrefix, Function<C, String> persistenceIdPostfix, Class<C> commandType) {
-		return new PersistentEntitySharding<>(props, persistenceIdPrefix, persistenceIdPostfix, 256, commandType);
+	public static <C> PersistentEntitySharding<C> of(Props props, String persistenceIdPrefix, Function<C, String> persistenceIdPostfix) {
+		return new PersistentEntitySharding<>(props, persistenceIdPrefix, persistenceIdPostfix, 256);
 	}
 
 	/**
@@ -78,8 +76,8 @@ public class PersistentEntitySharding<C> {
 	 * @param persistenceIdPrefix  Fixed prefix for each persistence id. This is typically the name of your aggregate root, e.g. "document" or "user".
 	 * @param persistenceIdPostfix Function that returns the last part of the persistence id that a command is routed to. This typically is the real ID of your entity, or UUID.
 	 */
-	public static <C> PersistentEntitySharding<C> of(Props props, String persistenceIdPrefix, Function<C, String> persistenceIdPostfix, int numberOfShards, Class<C> commandType) {
-		return new PersistentEntitySharding<>(props, persistenceIdPrefix, persistenceIdPostfix, numberOfShards, commandType);
+	public static <C> PersistentEntitySharding<C> of(Props props, String persistenceIdPrefix, Function<C, String> persistenceIdPostfix, int numberOfShards) {
+		return new PersistentEntitySharding<>(props, persistenceIdPrefix, persistenceIdPostfix, numberOfShards);
 	}
 
 	/**

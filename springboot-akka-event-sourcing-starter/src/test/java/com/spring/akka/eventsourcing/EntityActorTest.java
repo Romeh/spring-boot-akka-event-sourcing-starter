@@ -49,8 +49,8 @@ public class EntityActorTest {
 
 		result.whenComplete((o, throwable) -> {
 			Response response = (Response) o;
-			System.out.println("Romeh 1: " + response.toString());
-			Assert.assertEquals(response.getOrderId(), "123456");
+			System.out.println("step 1: " + response.toString());
+			Assert.assertEquals("123456", response.getOrderId());
 			Assert.assertEquals(response.getOrderStatus(), OrderStatus.Created.name());
 
 		});
@@ -61,8 +61,8 @@ public class EntityActorTest {
 			final CompletableFuture<Object> result2 = PatternsCS.ask(testActorEntity, new OrderCmd.ValidateCmd("123456"), 5000).toCompletableFuture();
 			result2.whenComplete((o, throwable) -> {
 				Response response = (Response) o;
-				System.out.println("Romeh 2: " + response.toString());
-				Assert.assertEquals(response.getOrderId(), "123456");
+				System.out.println("step 2: " + response.toString());
+				Assert.assertEquals("123456", response.getOrderId());
 				Assert.assertEquals(response.getOrderStatus(), OrderStatus.Validated.name());
 
 			});
@@ -73,8 +73,8 @@ public class EntityActorTest {
 				final CompletableFuture<Object> result3 = PatternsCS.ask(testActorEntity, new OrderCmd.SignCmd("123456"), 5000).toCompletableFuture();
 				result3.whenComplete((o, throwable) -> {
 					Response response = (Response) o;
-					System.out.println("Romeh 3: " + response.toString());
-					Assert.assertEquals(response.getOrderId(), "123456");
+					System.out.println("step 3: " + response.toString());
+					Assert.assertEquals("123456", response.getOrderId());
 					Assert.assertEquals(response.getOrderStatus(), OrderStatus.Signed.name());
 				});
 
@@ -84,9 +84,9 @@ public class EntityActorTest {
 					final CompletableFuture<Object> result4 = PatternsCS.ask(testActorEntity, new OrderCmd.GetOrderStatusCmd("123456"), 5000).toCompletableFuture();
 					result4.whenComplete((o, throwable) -> {
 						OrderState response = (OrderState) o;
-						System.out.println("Romeh 4: " + response.toString());
-						Assert.assertEquals(response.getEventsHistory().size(), 3);
-						Assert.assertEquals(response.getOrderStatus(), OrderStatus.Signed.name());
+						System.out.println("step 4: " + response.toString());
+						Assert.assertEquals(3, response.getEventsHistory().size());
+						Assert.assertEquals(OrderStatus.Signed.name(), response.getOrderStatus());
 					});
 
 					pauseSeconds(5);
@@ -96,7 +96,7 @@ public class EntityActorTest {
 						PatternsCS.ask(testActorEntity, new OrderCmd.SignCmd("123456"), 5000).whenComplete((o, throwable) -> {
 
 							Assert.assertTrue(o instanceof Done);
-							System.out.println("Romeh 6: " + o.toString());
+							System.out.println("step 5: " + o.toString());
 						});
 					}
 
