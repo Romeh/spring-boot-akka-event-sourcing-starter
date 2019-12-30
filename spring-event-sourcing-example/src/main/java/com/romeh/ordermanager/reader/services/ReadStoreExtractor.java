@@ -26,6 +26,10 @@ public class ReadStoreExtractor implements StreamSingleTupleExtractor<CacheEntry
 	private static final Logger log = LoggerFactory.getLogger(ReadStoreExtractor.class);
 	private static final OrderManagerSerializer orderOrderManagerSerializer = new OrderManagerSerializer();
 
+	/**
+	 * @param msg the cache entry event which contain the added/update value object
+	 * @return the mapped read cache entry which will be streamed to the target cache
+	 */
 	@Override
 	public Map.Entry<String, JournalReadItem> extract(CacheEntryEvent<Object, BinaryObject> msg) {
 
