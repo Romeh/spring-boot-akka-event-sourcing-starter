@@ -28,7 +28,7 @@
         <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
         <maven.jar.version>2.2</maven.jar.version>
         <java.version>1.8</java.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <assertj.core.version>3.3.0</assertj.core.version>
         <mockito.version>1.10.19</mockito.version>
         <slf4j.api.version>1.7.25</slf4j.api.version>
